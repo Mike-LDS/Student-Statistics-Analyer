@@ -25,10 +25,11 @@ for student in uniques:
     line = pd.DataFrame({'ID':student, 'First Name':first_name, 'Last Name':last_name},  index=[0])
     for program in programs:
         if stu_data[(stu_data['Program']==program)]["Hours"].sum() > 0:
-            hours = stu_data[(stu_data['Program']==program)]["Hours"].sum()
-            location = stu_data[(stu_data['Program']==program)]['Location'].mode()[0]
-            line = pd.DataFrame({'ID':student, 'First Name':first_name, 'Last Name':last_name, 'Program':program, 'Location':location, 'Hours':hours},  index=[0])
-            enrolment = pd.concat([enrolment,line])
+            locations = stu_data[(stu_data['Program']==program)]['Location'].unique()
+            for location in locations:
+                hours = stu_data[(stu_data['Program']==program) & (stu_data['Location']==location)]["Hours"].sum()
+                line = pd.DataFrame({'ID':student, 'First Name':first_name, 'Last Name':last_name, 'Program':program, 'Location':location, 'Hours':hours},  index=[0])
+                enrolment = pd.concat([enrolment,line])
 
 # Outputting Results
 enrolment.to_csv('test.csv', index=False)
@@ -38,4 +39,4 @@ start_date = pd.to_datetime('2022-01-01 00:00:00')
 end_date = pd.to_datetime('2023-01-01 00:00:00')
 filtered = lessons[(pd.to_datetime(lessons['DateTime']) > start_date) & (pd.to_datetime(lessons['DateTime']) < end_date)]
 uniques = filtered['ID'].unique()
-print(len(uniques)+19+8)
+print(len(uniques)+19+8-1)

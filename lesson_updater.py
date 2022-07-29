@@ -42,7 +42,7 @@ with open('appointments.csv', newline='') as csvfile:
                     loc = row['location']
 
                 hrs = float(row['units_raw'])
-                if pro = 'LDS Access':
+                if pro == 'LDS Access':
                     hrs = round(hrs,0)
             
                 date = pd.to_datetime(row['start'], format='%d/%m/%Y %I:%M %p')
@@ -75,11 +75,11 @@ with open('appointments.csv', newline='') as csvfile:
 with open(r'/Users/lds/Documents/Student Data/Summer Enrolment/2022_SummerCamps.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        entry = row['Week'].replace('-','') + row['ID']
+        entry = row['Week'][2:4] +row['Week Num'] + row['ID']
         if row['Camp Status'] == 'Completed' and entry not in entries:
             date = pd.to_datetime(row['Week'], format='%Y-%m-%d')
             line = pd.DataFrame({'Entry':entry,'ID':row['ID'], 'First Name': row['First Name'], 'Last Name': row['Last Name'], 'Program':'Summer Camps', 'Location':'East Van',
-                                 'Hours':float(35), 'DateTime':date}, index=[0])
+                                 'Hours':row['Hours'], 'DateTime':date}, index=[0])
             lessons = pd.concat([lessons,line])
             
 ## Updating CSV
