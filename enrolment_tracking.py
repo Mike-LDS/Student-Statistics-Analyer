@@ -12,7 +12,7 @@ lessons = pd.read_csv('lessons.csv')
 start_date = pd.to_datetime('2022-07-01 00:00:00')
 end_date = pd.to_datetime('2022-09-01 00:00:00')
 
-filtered = lessons[(pd.to_datetime(lessons['DateTime']) > start_date) & (pd.to_datetime(lessons['DateTime']) < end_date)]
+filtered = lessons[(pd.to_datetime(lessons['DateTime']) > start_date) & (pd.to_datetime(lessons['DateTime']) < end_date) & (lessons['Status'] == 'Complete')]
 
 uniques = filtered['ID'].unique()
 programs = lessons['Program'].unique()

@@ -1,7 +1,3 @@
-'''
-Code to add additional lessons to the CSV file, lessons.csv, which contains lessons LDS starting in 13 Sept 2021
-'''
-
 import csv
 import pandas as pd
 from datetime import datetime
@@ -15,16 +11,13 @@ programs = ['Explicit Instruction', 'Homework Support', 'RISE at School', 'SLP',
 group_pro = ['LDS Social Language Group', 'Early RISErs']
 gro_convert = ['Social Language Group', 'Early RISErs - Spring']
 
-## Load DataFrame
-lessons = pd.read_csv('lessons.csv')
-
-entries = lessons['Entry'].unique()
+lessons = pd.DataFrame({'Entry':[], 'ID':[], 'First Name':[], 'Last Name':[], 'Program':[], 'Location':[], 'Status':[], 'Hours':[], 'Rate':[], 'DateTime':[]})
 
 ## Compiling Lessons Data
 with open('appointments.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        if row['status'] != 'Planned' and row['\ufeff"id"'] not in entries:
+        if row['status'] != 'Planned':
             # Program
             pro = ''
             for i in range(len(programs)):
@@ -40,27 +33,18 @@ with open('appointments.csv', newline='') as csvfile:
                             loc = locations[i]
                 else:
                     loc = row['location']
-
-                hrs = float(row['units_raw'])
-                if pro == 'LDS Access':
-                    hrs = round(hrs,0)
-
-                if pro == 'Summer RISE Intensive':
-                    rate = ''
-                else:
-                    rate = float(row['charge_rate_1'])
             
                 date = pd.to_datetime(row['start'], format='%d/%m/%Y %I:%M %p')
         
                 line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'First Name': name[0], 'Last Name': name[1], 'Program':pro, 'Location':loc, 'Status': row['status'],
-                                 'Hours':hrs, 'Rate': rate, 'DateTime':date}, index=[0])
+                                 'Hours':float(row['units_raw']), 'Rate':float(row['charge_rate_1']), 'DateTime':date}, index=[0])
                 lessons = pd.concat([lessons,line])
             else:
                 print(row['topic'])
 
     # Group Programs
         for j in range(len(group_pro)):
-            if group_pro[j].lower() in row['topic'].lower() and row['status'] != 'Planned' and row['\ufeffid']+'_1' not in entries:
+            if group_pro[j].lower() in row['topic'].lower() and row['status'] != 'Planned':
                 for i in range(1,11):
                     try:
                         if row['recipient_'+str(i)] != '' and row['recipient_attendance_'+str(i)] == 'Attended':
@@ -70,22 +54,26 @@ with open('appointments.csv', newline='') as csvfile:
                                     loc = locations[k]
                             date = pd.to_datetime(row['start'], format='%d/%m/%Y %I:%M %p')
                             
-                            line = pd.DataFrame({'Entry':row['\ufeffid']+'_'+str(i),'ID':row['recipient_id_'+str(i)], 'First Name': name[0], 'Last Name': name[1], 'Program':gro_convert[j],
-                                                 'Location':loc, 'Status':row['status'], 'Hours':float(row['units_raw']), 'DateTime':date}, index=[0])
+                            line = pd.DataFrame({'Entry':row['\ufeff"id"']+'_'+str(i),'ID':row['recipient_id_'+str(i)], 'First Name': name[0], 'Last Name': name[1], 'Program':gro_convert[j],
+                                                 'Status': row['status'], 'Location':loc,'Hours':float(row['units_raw']), 'Rate':float(row['charge_rate_'+str(i)]), 'DateTime':date}, index=[0])
                             lessons = pd.concat([lessons,line])
                     except:
                         continue
 
-## Code Added to inlcude summer camps
-with open(r'/Users/lds/Documents/Student Data/Summer Enrolment/2022_SummerCamps.csv', newline='') as csvfile:
+# Adding Non-Lesson Based Group programs
+group_programs = ['Spring Break Camps 2022', '2022 Early RISErs - Winter']
+gro_convert = ['Spring Break Camps', 'Early RISEr - Winter']
+hours_group = ['35','20']
+start_dates = ['2022-03-14','2022-01-10']
+
+with open('users.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        entry = row['Week'][2:4] +row['Week Num'] + row['ID']
-        if row['Camp Status'] == 'Completed' and entry not in entries:
-            date = pd.to_datetime(row['Week'], format='%Y-%m-%d')
-            line = pd.DataFrame({'Entry':entry,'ID':row['ID'], 'First Name': row['First Name'], 'Last Name': row['Last Name'], 'Program':'Summer Camps', 'Location':'East Van',
-                                 'Status':row['Camp Status'], 'Hours':row['Hours'], 'DateTime':date}, index=[0])
-            lessons = pd.concat([lessons,line])
-            
-## Updating CSV
+        for i in range(len(group_programs)):
+            if group_programs[i] in row['Labels']:
+                date = pd.to_datetime(start_dates[i], format='%Y-%m-%d')
+                line = pd.DataFrame({'Entry':randint(100000,999999),'ID':row['\ufeffID'], 'First Name': row['First name'], 'Last Name': row['Last name'], 'Program':gro_convert[i], 'Location':'East Van',
+                                     'Status': 'Complete', 'Hours':hours_group[i], 'DateTime':date}, index=[0])
+                lessons = pd.concat([lessons,line])
+
 lessons.to_csv('lessons.csv', index=False)
