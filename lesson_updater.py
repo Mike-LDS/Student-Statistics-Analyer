@@ -31,8 +31,6 @@ with open('appointments.csv', newline='') as csvfile:
                 if pro_snip[i].lower() in row['topic'].lower():
                     pro = programs[i]
             if pro != '':
-                # Student Name
-                name = row['recipient_1'].split(' ',1)
                 # Location
                 if pro != 'RISE at School':
                     for i in  range(len(locations)):
@@ -51,8 +49,15 @@ with open('appointments.csv', newline='') as csvfile:
                     rate = float(row['charge_rate_1'])
             
                 date = pd.to_datetime(row['start'], format='%d/%m/%Y %I:%M %p')
+
+                if row['status'] == 'Complete' and 'take-home' in row['topic'].lower():
+                    status = 'Complete: Take-Home'
+                elif row['status'] == 'Complete' and 'no-show' in row['topic'].lower():
+                    status = 'No-Show'
+                else:
+                    status = row['status']
         
-                line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'First Name': name[0], 'Last Name': name[1], 'Program':pro, 'Location':loc, 'Status': row['status'],
+                line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status,
                                  'Hours':hrs, 'Rate': rate, 'DateTime':date}, index=[0])
                 lessons = pd.concat([lessons,line])
             else:
@@ -64,28 +69,16 @@ with open('appointments.csv', newline='') as csvfile:
                 for i in range(1,11):
                     try:
                         if row['recipient_'+str(i)] != '' and row['recipient_attendance_'+str(i)] == 'Attended':
-                            name = row['recipient_'+str(i)].split(' ',1)
                             for k in  range(len(locations)):
                                 if locations[k] in row['location']:
                                     loc = locations[k]
                             date = pd.to_datetime(row['start'], format='%d/%m/%Y %I:%M %p')
                             
-                            line = pd.DataFrame({'Entry':row['\ufeffid']+'_'+str(i),'ID':row['recipient_id_'+str(i)], 'First Name': name[0], 'Last Name': name[1], 'Program':gro_convert[j],
+                            line = pd.DataFrame({'Entry':row['\ufeffid']+'_'+str(i),'ID':row['recipient_id_'+str(i)], 'Program':gro_convert[j],
                                                  'Location':loc, 'Status':row['status'], 'Hours':float(row['units_raw']), 'DateTime':date}, index=[0])
                             lessons = pd.concat([lessons,line])
                     except:
                         continue
-
-## Code Added to inlcude summer camps
-with open(r'/Users/lds/Documents/Student Data/Summer Enrolment/2022_SummerCamps.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        entry = row['Week'][2:4] +row['Week Num'] + row['ID']
-        if row['Camp Status'] == 'Completed' and entry not in entries:
-            date = pd.to_datetime(row['Week'], format='%Y-%m-%d')
-            line = pd.DataFrame({'Entry':entry,'ID':row['ID'], 'First Name': row['First Name'], 'Last Name': row['Last Name'], 'Program':'Summer Camps', 'Location':'East Van',
-                                 'Status':row['Camp Status'], 'Hours':row['Hours'], 'DateTime':date}, index=[0])
-            lessons = pd.concat([lessons,line])
             
 ## Updating CSV
 lessons.to_csv('lessons.csv', index=False)
