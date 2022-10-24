@@ -57,15 +57,40 @@ with open('appointments.csv', newline='') as csvfile:
                 else:
                     status = row['status']
         
+                #Student Expections
+                if row['recipient_id_1'] == '1785364' and pro == 'Explicit Instruction':
+                    pro = 'RISE at School'
+                    loc = 'KLEOS'
+                if row['recipient_id_1'] == '1379956' and pro == 'Explicit Instruction':
+                    pro = 'RISE at School'
+                    loc = 'Lord Strathcona Elementary'
+                if row['recipient_id_1'] == '1379956' and pro == 'Homework Support':
+                    pro = 'RISE at School'
+                    loc = 'SD 5/DL'
+                if row['recipient_id_1'] == '1726975' and pro == 'Explicit Instruction':
+                    pro = 'RISE at School'
+                    loc = 'SD 5/DL'
+
                 line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status,
                                  'Hours':hrs, 'Rate': rate, 'DateTime':date}, index=[0])
                 lessons = pd.concat([lessons,line])
             else:
                 print(row['topic'])
+                
+        # Updating Corrections to Lesson Statuses        
+        elif row['\ufeff"id"'] in entries:
+            if row['status'] == 'Complete' and 'take-home' in row['topic'].lower():
+                status = 'Complete: Take-Home'
+            elif row['status'] == 'Complete' and 'no-show' in row['topic'].lower():
+                status = 'No-Show'
+            else:
+                status = row['status']
+                    
+            lessons.loc[(lessons['Entry'] == row['\ufeff"id"'], 'Status')] = status
 
     # Group Programs
         for j in range(len(group_pro)):
-            if group_pro[j].lower() in row['topic'].lower() and row['status'] != 'Planned' and row['\ufeffid']+'_1' not in entries:
+            if group_pro[j].lower() in row['topic'].lower() and row['status'] != 'Planned' and row['\ufeff"id"']+'_1' not in entries:
                 for i in range(1,11):
                     try:
                         if row['recipient_'+str(i)] != '' and row['recipient_attendance_'+str(i)] == 'Attended':
