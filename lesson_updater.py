@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime
 from random import randint
 
-locations = ['East Van', 'North Van', 'RISE @ Home', 'LDS Access']
+locations = ['East Van', 'North Van', 'RISE at Home', 'LDS Access']
 pro_snip = ['Explicit', 'Support', 'School', 'SLP', 'RISE TEAM', 'RISE Now', 'Summer Tutoring', 'LDS Access', 'Summer RISE','KTEA-3 Assessment']
 programs = ['Explicit Instruction', 'Homework Support', 'RISE at School', 'SLP', 'RISE TEAM', 'RISE Now', 'Summer Tutoring', 'LDS Access', 'Summer RISE Intensive','KTEA-3 Assessment']
 
@@ -64,12 +64,19 @@ with open('appointments.csv', newline='') as csvfile:
                 if row['recipient_id_1'] == '1379956' and pro == 'Explicit Instruction':
                     pro = 'RISE at School'
                     loc = 'Lord Strathcona Elementary'
-                if row['recipient_id_1'] == '1379956' and pro == 'Homework Support':
+                if row['recipient_id_1'] == '1837644' and pro == 'Homework Support':
                     pro = 'RISE at School'
                     loc = 'SD 5/DL'
                 if row['recipient_id_1'] == '1726975' and pro == 'Explicit Instruction':
                     pro = 'RISE at School'
                     loc = 'SD 5/DL'
+                if row['recipient_id_1'] == '1604267' and pro == 'Homework Support':
+                    pro = 'RISE at School'
+                    loc = 'SD 5/DL'
+                if row['recipient_id_1'] == '1621195' and pro == 'Explicit Instruction':
+                    pro = 'RISE at School'
+                    loc = 'SD 5/DL'
+                
 
                 line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status,
                                  'Hours':hrs, 'Rate': rate, 'DateTime':date}, index=[0])
