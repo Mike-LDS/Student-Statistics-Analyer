@@ -20,6 +20,9 @@ lessons = pd.read_csv('lessons.csv')
 
 entries = lessons['Entry'].unique()
 
+## New Lessons
+new_lessons = pd.DataFrame({'Entry':[], 'ID':[], 'Program':[], 'Location':[], 'Status': [], 'Hours':[], 'Rate': [], 'Instructor':[], 'DateTime':[]})
+
 ## Compiling Lessons Data
 with open('appointments.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -78,13 +81,13 @@ with open('appointments.csv', newline='') as csvfile:
                     loc = 'SD 5/DL'
                 
 
-                line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status,
-                                 'Hours':hrs, 'Rate': rate, 'DateTime':date}, index=[0])
-                lessons = pd.concat([lessons,line])
+                line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status, 'Hours':hrs, 'Rate': rate,
+                                     'Instructor':row['contractor_id_1'], 'DateTime':date}, index=[0])
+                new_lessons = pd.concat([new_lessons,line])
             else:
                 print(row['topic'])
                 
-        # Updating Corrections to Lesson Statuses        
+        # Updating Corrections to Lesson Statuses (Only for Take-Home)        
         elif row['\ufeff"id"'] in entries:
             if row['status'] == 'Complete' and 'take-home' in row['topic'].lower():
                 status = 'Complete: Take-Home'
@@ -108,9 +111,15 @@ with open('appointments.csv', newline='') as csvfile:
                             
                             line = pd.DataFrame({'Entry':row['\ufeffid']+'_'+str(i),'ID':row['recipient_id_'+str(i)], 'Program':gro_convert[j],
                                                  'Location':loc, 'Status':row['status'], 'Hours':float(row['units_raw']), 'DateTime':date}, index=[0])
-                            lessons = pd.concat([lessons,line])
+                            new_lessons = pd.concat([new_lessons,line])
                     except:
                         continue
+
+## Checking for Subbed Lessons
+for index, row in new_lessons.iterrows():
+    if len(new_lessons[(new_lessons['DateTime'] == row['DateTime']) & (new_lessons['Instructor'] == row['Instructor'])]) > 1:
+        if row['Status'] == 'Cancelled':
+            new_lessons.loc[(new_lessons['Entry'] == row['Entry'], 'Status')] = 'Subbed'
             
 ## Updating CSV
-lessons.to_csv('lessons.csv', index=False)
+new_lessons.to_csv('new_lessons.csv', index=False)
