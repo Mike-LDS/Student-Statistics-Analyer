@@ -40,13 +40,12 @@ for student in uniques:
 
 # Outputting Results
 enrolment.to_csv('test.csv', index=False)
-print('Unique Students: ' + str(len(uniques)))
 One2one_uniques = filtered[(filtered['Program'] == '1-to-1 Instruction')]['ID'].unique()
 print('Unique 1-to-1 Students: ' + str(len(One2one_uniques)))
 
-## Printing Unique Students for 2022
-##start_date = pd.to_datetime('2023-01-01 00:00:00')
-##end_date = pd.to_datetime('2024-01-01 00:00:00')
-##filtered_2023 = lessons[(pd.to_datetime(lessons['DateTime']) > start_date) & (pd.to_datetime(lessons['DateTime']) < end_date)]
-##uniques = filtered_2022['ID'].unique()
-##print('2022 Unique: ' + str(len(uniques)+19+8-1))
+## Printing Unique Students for 2023
+start_date = pd.to_datetime('2023-01-01 00:00:00')
+end_date = pd.to_datetime('2024-01-01 00:00:00')
+filtered_2023 = lessons[(pd.to_datetime(lessons['DateTime']) > start_date) & (pd.to_datetime(lessons['DateTime']) < end_date)]
+uniques = filtered_2023['ID'].unique()
+print('2023 Unique: ' + str(len(uniques)+19))
