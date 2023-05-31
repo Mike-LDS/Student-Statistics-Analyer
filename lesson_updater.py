@@ -65,8 +65,7 @@ with open('appointments.csv', newline='') as csvfile:
                     pro = 'RISE at School'
                     loc = 'KLEOS'
                 if row['recipient_id_1'] == '1379956' and pro == 'Explicit Instruction':
-                    pro = 'RISE at School'
-                    loc = 'Lord Strathcona Elementary'
+                    loc = 'LDS Access'
                 if row['recipient_id_1'] == '1837644' and pro == 'Homework Support':
                     pro = 'RISE at School'
                     loc = 'SD 5/DL'
@@ -79,6 +78,12 @@ with open('appointments.csv', newline='') as csvfile:
                 if row['recipient_id_1'] == '1621195' and pro == 'Explicit Instruction':
                     pro = 'RISE at School'
                     loc = 'SD 5/DL'
+                if row['recipient_id_1'] == '1929127' and pro == 'Explicit Instruction':
+                    loc = 'LDS Access'
+                if row['recipient_id_1'] == '1822481' and pro == 'Explicit Instruction':
+                    loc = 'LDS Access'
+                if row['recipient_id_1'] == '1841389' and pro == 'Explicit Instruction':
+                    loc = 'LDS Access'
                 
 
                 line = pd.DataFrame({'Entry':row['\ufeff"id"'],'ID':row['recipient_id_1'], 'Program':pro, 'Location':loc, 'Status': status, 'Hours':hrs, 'Rate': rate,
@@ -86,6 +91,8 @@ with open('appointments.csv', newline='') as csvfile:
                 new_lessons = pd.concat([new_lessons,line])
             else:
                 print(row['topic'])
+                
+            new_lessons.loc[(new_lessons['ID'] == '2084303', 'ID')] = '1574698'
                 
         # Updating Corrections to Lesson Statuses (Only for Take-Home)        
         elif row['\ufeff"id"'] in entries:
@@ -122,4 +129,5 @@ for index, row in new_lessons.iterrows():
             new_lessons.loc[(new_lessons['Entry'] == row['Entry'], 'Status')] = 'Subbed'
             
 ## Updating CSV
-new_lessons.to_csv('new_lessons.csv', index=False)
+lessons = pd.concat([lessons,new_lessons])
+lessons.to_csv('lessons.csv', index=False)
